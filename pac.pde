@@ -1171,14 +1171,14 @@ void draw() {
     textSize(23);
     text("Names",150,60);
     text("Scores",450,60);
-    for(int i=0; i<10; i++){
+    for(int i=0; i<punteggi.getRowCount() && i<10; i++){
       if(i==posnome && topscoresingame) fill(r,g,b);
       else if(i==0 || i==4 || i==8) fill(red.colore[0],red.colore[1],red.colore[2]);
       else if(i==1 || i==5 || i==9) fill(pink.colore[0],pink.colore[1],pink.colore[2]);
       else if(i==2 || i==6) fill(blue.colore[0],blue.colore[1],blue.colore[2]);
       else if(i==3 || i==7) fill(orange.colore[0],orange.colore[1],orange.colore[2]);
-      if((punteggi.getInt(i,"score"))!=0)text(punteggi.getString(i,"name"), 150, 160+i*30);
-      if((punteggi.getInt(i,"score"))!=0)text(punteggi.getInt(i,"score"),450, 160+i*30);
+      text(punteggi.getString(i,"name"), 150, 160+i*30);
+      text(punteggi.getInt(i,"score"),450, 160+i*30);
     }
     fill(r,g,b);
     imageMode(CENTER);
@@ -1247,36 +1247,65 @@ void draw() {
     }
     else{
       name=name.substring(0,name.length()-1);
-      if(old_score>punteggi.getInt(9,"score")){
-        loser=false;
-        punteggi.setInt(9,"score", old_score);
-        punteggi.setString(9,"name", name);
-        for(int i=0;i<punteggi.getRowCount();i++){
-            max=punteggi.getInt(i,"score");
-            max_nome=punteggi.getString(i,"name");
-            for(int j=i;j<punteggi.getRowCount();j++){
-                if(max<=punteggi.getInt(j,"score")){
-                    max=punteggi.getInt(j,"score");
-                    max_nome=punteggi.getString(j,"name");
-                    pos=j;
-                    check=true;
-                }
-            }
-            if(check==true){
-              temp=punteggi.getInt(i,"score");
-              punteggi.setInt(i,"score",max);
-              punteggi.setInt(pos,"score",temp);
-              nome_temp=punteggi.getString(i,"name");
-              punteggi.setString(i,"name", max_nome);
-              punteggi.setString(pos,"name",nome_temp);
-              if(old_score==max) posnome=i;
-            }
-            check=false;
+      if(punteggi.getRowCount()==9) {
+        if(old_score>punteggi.getInt(9,"score")){
+          loser=false;
+          punteggi.setInt(9,"score", old_score);
+          punteggi.setString(9,"name", name);
+          for(int i=0;i<punteggi.getRowCount();i++){
+              max=punteggi.getInt(i,"score");
+              max_nome=punteggi.getString(i,"name");
+              for(int j=i;j<punteggi.getRowCount();j++){
+                  if(max<=punteggi.getInt(j,"score")){
+                      max=punteggi.getInt(j,"score");
+                      max_nome=punteggi.getString(j,"name");
+                      pos=j;
+                      check=true;
+                  }
+              }
+              if(check==true){
+                temp=punteggi.getInt(i,"score");
+                punteggi.setInt(i,"score",max);
+                punteggi.setInt(pos,"score",temp);
+                nome_temp=punteggi.getString(i,"name");
+                punteggi.setString(i,"name", max_nome);
+                punteggi.setString(pos,"name",nome_temp);
+                if(old_score==max) posnome=i;
+              }
+              check=false;
+          }
+        }
+        else{
+          loser=true;
+          posnome=15;
         }
       }
       else{
-        loser=true;
-        posnome=15;
+        TableRow newRow = punteggi.addRow();
+        newRow.setInt("score", old_score);
+        newRow.setString("name", name);
+        for(int i=0;i<punteggi.getRowCount();i++){
+             max=punteggi.getInt(i,"score");
+             max_nome=punteggi.getString(i,"name");
+             for(int j=i;j<punteggi.getRowCount();j++){
+                 if(max<=punteggi.getInt(j,"score")){
+                     max=punteggi.getInt(j,"score");
+                     max_nome=punteggi.getString(j,"name");
+                     pos=j;
+                     check=true;
+                 }
+             }
+             if(check==true){
+               temp=punteggi.getInt(i,"score");
+               punteggi.setInt(i,"score",max);
+               punteggi.setInt(pos,"score",temp);
+               nome_temp=punteggi.getString(i,"name");
+               punteggi.setString(i,"name", max_nome);
+               punteggi.setString(pos,"name",nome_temp);
+               if(old_score==max) posnome=i;
+             }
+             check=false;
+         }
       }
       saveTable(punteggi, "punti.tsv");
       name="";
